@@ -21,16 +21,40 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-
+/**
+ * RecipeService is the service class that implements {@link UserDetailsService} interface
+ * and provides functionalities for saving, finding and deleting recipes and registrations.
+ *
+ * @author ChatGPT
+ * @version 1.0
+ * @since 2023-02-04
+ * @see UserDetailsService
+ * @see RecipeRepository
+ * @see RegistrationRepository
+ * @see VVRecipe
+ * @see VVRegistration
+ */
 @Service
 @Slf4j
 public class RecipeService implements UserDetailsService {
+    /**
+     * The RecipeRepository is used to interact with the database for recipes.
+     */
     @Autowired
     private RecipeRepository recipeRepository;
 
+    /**
+     * The RegistrationRepository is used to interact with the database for registrations.
+     */
     @Autowired
     private RegistrationRepository registrationRepository;
 
+    /**
+     * Saves the given {@link VVRecipe} object to the database.
+     *
+     * @param recipe The recipe to be saved.
+     * @return The saved recipe.
+     */
     public VVRecipe save(VVRecipe recipe) {
         if (recipe.getDate() == null) {
             recipe.setDate(LocalDateTime.now());
@@ -44,16 +68,33 @@ public class RecipeService implements UserDetailsService {
         return recipeRepository.save(recipe.toBuilder().owner(owner).build());
     }
 
+    /**
+     * Saves the given {@link VVRegistration} object to the database.
+     *
+     * @param vvRegistration The registration to be saved.
+     * @return The saved registration.
+     */
     public VVRegistration saveRegistration(VVRegistration vvRegistration) {
         log.info("<## VV ##> saving vvRegistration: " + vvRegistration);
         return registrationRepository.save(vvRegistration.toBuilder().role("ROLE_USER").id( generateNewIdCuzHellAutoIncrementFoulsUpRegistration() ).build() );
     }
 
+    /**
+     * Deletes the recipe with the given id from the database.
+     *
+     * @param id The id of the recipe to be deleted.
+     */
     public void delete(Integer id) {
         log.info("<## VV ##> deleting recipe: " + id);
         recipeRepository.deleteById(id);
     }
 
+    /**
+     * Finds the recipe with the given id from the database.
+     *
+     * @param id The id of the recipe to be found.
+     * @return The found recipe or null if not found.
+     */
     public VVRecipe find(Integer id) {
         VVRecipe result = recipeRepository.findById(id).orElseGet(() -> null);
         log.info("<## VV ##> fetching recipe" + id + ": " + result);
@@ -61,6 +102,11 @@ public class RecipeService implements UserDetailsService {
         return result;
     }
 
+    /**
+     * Finds all the recipes from the database.
+     *
+     * @return A list of all the recipes.
+     */
     public List<VVRecipe> findAll() {
         return recipeRepository.findAll();
     }
@@ -92,6 +138,14 @@ public class RecipeService implements UserDetailsService {
         return newId;
     }
 
+    /**
+     * Searches the recipes based on the given name or category.
+     *
+     * @param name The name of the recipe.
+     * @param category The category of the recipe.
+     * @return A list of matching recipes.
+     * @throws BadRequestException if both name and category are blank or both are not blank.
+     */
     public List<VVRecipe> search(String name, String category) {
         if (name == null && category == null) {
             throw new BadRequestException();
@@ -108,6 +162,12 @@ public class RecipeService implements UserDetailsService {
         }
     }
 
+    /**
+     * Checks if a registration with the given email already exists in the database.
+     *
+     * @param email The email of the registration.
+     * @return True if a registration with the given email already exists, false otherwise.
+     */
     public boolean alreadyExists(String email) {
         log.info("<## VV ##> fetching registration by email: " + email);
         List<VVRegistration> result=registrationRepository.findByEmail(email);
@@ -117,6 +177,14 @@ public class RecipeService implements UserDetailsService {
         return true;
     }
 
+
+    /**
+     * Loads the user details for the given username (email).
+     *
+     * @param username The email of the user.
+     * @return The {@link UserDetails} object for the given username.
+     * @throws UsernameNotFoundException if the user with the given username is not found.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<VVRegistration> result=registrationRepository.findByEmail(username);
