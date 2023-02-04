@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -62,7 +61,7 @@ public class RecipeService implements UserDetailsService {
         log.info("<## VV ##> saving recipe: " + recipe);
         if (recipe.getId() == null) {
             String owner=SecurityContextHolder.getContext().getAuthentication().getName();
-            return recipeRepository.save(recipe.toBuilder().owner(owner).id( generateNewIdCuzHellAutoIncrementFoulsUp() ).build() );
+            return recipeRepository.save(recipe.toBuilder().owner(owner).id( generateNextRecipeId() ).build() );
         }
         String owner=SecurityContextHolder.getContext().getAuthentication().getName();
         return recipeRepository.save(recipe.toBuilder().owner(owner).build());
@@ -76,7 +75,7 @@ public class RecipeService implements UserDetailsService {
      */
     public VVRegistration saveRegistration(VVRegistration vvRegistration) {
         log.info("<## VV ##> saving vvRegistration: " + vvRegistration);
-        return registrationRepository.save(vvRegistration.toBuilder().role("ROLE_USER").id( generateNewIdCuzHellAutoIncrementFoulsUpRegistration() ).build() );
+        return registrationRepository.save(vvRegistration.toBuilder().role("ROLE_USER").id( generateNextId() ).build() );
     }
 
     /**
@@ -112,7 +111,7 @@ public class RecipeService implements UserDetailsService {
     }
 
 
-    private int generateNewIdCuzHellAutoIncrementFoulsUp() {
+    private int generateNextRecipeId() {
         int newId = 0;
         List<VVRecipe> vvRecipes = new ArrayList<>();
         recipeRepository.findAll().forEach(vvRecipes::add);
@@ -125,7 +124,7 @@ public class RecipeService implements UserDetailsService {
         return newId;
     }
 
-    private int generateNewIdCuzHellAutoIncrementFoulsUpRegistration() {
+    private int generateNextId() {
         int newId = 0;
         List<VVRegistration> vvRegistrations = new ArrayList<>();
         registrationRepository.findAll().forEach(vvRegistrations::add);
