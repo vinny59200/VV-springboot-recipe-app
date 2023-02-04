@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.vv.recipe"},{"l":"com.vv.recipe.vv"},{"l":"com.vv.recipe.vv.controller"},{"l":"com.vv.recipe.vv.exception"},{"l":"com.vv.recipe.vv.model"},{"l":"com.vv.recipe.vv.repository"},{"l":"com.vv.recipe.vv.service"}];updateSearchResults();
